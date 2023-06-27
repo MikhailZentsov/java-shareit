@@ -39,11 +39,11 @@ public class UserServiceImpl implements UserService {
     public GetUserDto update(long id, CreateUpdateUserDto createUpdateUserDto) {
         User user = userStorage.getById(id);
 
-        if (createUpdateUserDto.getName() != null) {
+        if (createUpdateUserDto.getName() != null && !createUpdateUserDto.getName().isBlank()) {
             user.setName(createUpdateUserDto.getName());
         }
 
-        if (createUpdateUserDto.getEmail() != null) {
+        if (createUpdateUserDto.getEmail() != null  && !createUpdateUserDto.getEmail().isBlank()) {
             user.setEmail(createUpdateUserDto.getEmail());
         }
 

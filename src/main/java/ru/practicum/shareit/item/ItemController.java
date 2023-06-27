@@ -48,10 +48,9 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    @Validated(OnUpdate.class)
     public GetItemDto update(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
                              @PathVariable long itemId,
-                             @RequestBody @Valid CreateUpdateItemDto itemDto) {
+                             @RequestBody @Validated(OnUpdate.class) CreateUpdateItemDto itemDto) {
 
         return itemService.update(userId, itemId, itemDto);
     }

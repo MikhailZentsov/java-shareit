@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class InMemoryItemStorageImpl implements ItemStorage {
             return List.copyOf(itemsByUser.get(userId).values());
         }
 
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override
@@ -43,29 +43,29 @@ public class InMemoryItemStorageImpl implements ItemStorage {
     @Override
     public Item create(Item item) {
         item.setId(getNewId());
+        final Long ownerId = item.getOwner().getId();
+        final Long itemId = item.getId();
 
-        if (!itemsByUser.containsKey(item.getOwner().getId())) {
-            itemsByUser.put(item.getOwner().getId(), new HashMap<>());
-        }
+        items.put(itemId, item);
+        itemsByUser.computeIfAbsent(ownerId, k -> new HashMap<>()).put(itemId, item);
 
-        items.put(item.getId(), item);
-        itemsByUser.get(item.getOwner().getId()).put(item.getId(), item);
-
-        return getOneById(item.getId());
+        return getOneById(itemId);
     }
 
     @Override
     public Item update(long userId, Item item) {
         getOneById(item.getId());
+        final Long ownerId = items.get(item.getId()).getOwner().getId();
+        final Long itemId = item.getId();
 
-        if (!items.get(item.getId()).getOwner().getId().equals(userId)) {
+        if (!ownerId.equals(userId)) {
             throw new NotFoundException("Вещь не найдена");
         }
 
-        items.put(item.getId(), item);
-        itemsByUser.get(item.getOwner().getId()).put(item.getId(), item);
+        items.put(itemId, item);
+        itemsByUser.get(ownerId).put(itemId, item);
 
-        return getOneById(item.getId());
+        return getOneById(itemId);
     }
 
     @Override
@@ -82,13 +82,14 @@ public class InMemoryItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> search(String text) {
-        return List.copyOf(items.values()
+        String lowerCaseText = text.toLowerCase();
+
+        return items.values()
                 .stream()
-                .filter(t -> t.getName().toLowerCase().contains(text.toLowerCase())
-                        || t.getDescription().toLowerCase().contains(text.toLowerCase()))
-                .filter(Item::getAvailable)
-                .collect(Collectors.toList())
-        );
+                .filter(t -> (t.getName().toLowerCase().contains(lowerCaseText)
+                        || t.getDescription().toLowerCase().contains(lowerCaseText))
+                        && t.getAvailable())
+                .collect(Collectors.toList());
     }
 
     private long getNewId() {

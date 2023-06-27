@@ -9,7 +9,7 @@ import ru.practicum.shareit.mapper.ItemMapper;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,11 +53,11 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemStorage.getOneById(itemId);
         item.setOwner(user);
 
-        if (updateItemDto.getName() != null) {
+        if (updateItemDto.getName() != null && !updateItemDto.getName().isBlank()) {
             item.setName(updateItemDto.getName());
         }
 
-        if (updateItemDto.getDescription() != null) {
+        if (updateItemDto.getDescription() != null && !updateItemDto.getDescription().isBlank()) {
             item.setDescription(updateItemDto.getDescription());
         }
 
@@ -80,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         userStorage.getById(userId);
 
         if (text.isBlank()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return itemStorage.search(text)

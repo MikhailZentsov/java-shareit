@@ -14,4 +14,8 @@ public class Item {
     private Boolean available;
     private User owner;
     private ItemRequest request;
+
+    public User getOwner() {
+        return owner.toBuilder().build();
+    }
 }
