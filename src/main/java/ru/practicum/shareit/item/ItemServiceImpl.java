@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.MethodArgumentException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -22,11 +23,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
     private final CommentStorage commentStorage;
 
+    @Transactional(readOnly = true)
     @Override
     public List<GetItemDto> getAllByUserId(long userId) {
         List<Item> items = itemStorage.findAllyOwnerIdWithBookings(userId);
@@ -42,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public GetItemDto getOneById(long userId, long itemId) {
         userStorage.findById(userId).orElseThrow(
@@ -121,6 +125,7 @@ public class ItemServiceImpl implements ItemService {
         itemStorage.deleteById(itemId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<GetItemDto> search(long userId, String text) {
         userStorage.findById(userId).orElseThrow(

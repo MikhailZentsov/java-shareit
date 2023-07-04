@@ -15,5 +15,5 @@ public interface BookingService {
 
     GetBookingDto create(long userid, CreateBookingDto createBookingDto);
 
-    GetBookingDto approveBooking(long userId, long bookingId, String approved);
+    GetBookingDto approveBooking(long userId, long bookingId, Boolean approved);
 }

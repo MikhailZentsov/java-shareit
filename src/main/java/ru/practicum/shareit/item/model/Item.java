@@ -47,12 +47,12 @@ public class Item {
     @ToString.Exclude
     private User owner;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Set<Booking> bookings;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Set<Comment> comments;

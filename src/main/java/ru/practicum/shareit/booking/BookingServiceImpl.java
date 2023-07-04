@@ -1,13 +1,14 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.dto.GetBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.MethodArgumentException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotValidDateException;
@@ -24,11 +25,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
 
+    @Transactional(readOnly = true)
     @Override
     public List<GetBookingDto> getUserBookings(long userId, String stateString) {
         User user = userStorage.findById(userId).orElseThrow(
@@ -39,43 +42,43 @@ public class BookingServiceImpl implements BookingService {
 
         state = State.valueOf(stateString.toUpperCase());
         LocalDateTime currentMoment = LocalDateTime.now();
+        List<Booking> bookings;
 
         switch (state) {
             case ALL:
-                return bookingStorage.findByBooker(user)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBooker(user, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case CURRENT:
-                return bookingStorage.findByBookerAndStartDateBeforeAndEndDateAfter(user, currentMoment, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBookerCurrent(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case PAST:
-                return bookingStorage.findByBookerAndEndDateBefore(user, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBookerPast(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case FUTURE:
-                return bookingStorage.findByBookerAndStartDateAfter(user, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBookerFuture(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case WAITING:
-                return bookingStorage.findByBookerAndStatus(user, Status.WAITING)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBookerAndStatus(
+                        user, Status.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case REJECTED:
-                return bookingStorage.findByBookerAndStatus(user, Status.REJECTED)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByBookerAndStatus(
+                        user, Status.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             default:
-                return Collections.emptyList();
+                bookings = Collections.emptyList();
         }
+
+        return bookings
+                .stream()
+                .map(BookingMapper::toGetBookingDtoFromBooking)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<GetBookingDto> getOwnerBookings(long userId, String stateString) {
         User user = userStorage.findById(userId).orElseThrow(
@@ -86,43 +89,44 @@ public class BookingServiceImpl implements BookingService {
 
         state = State.valueOf(stateString.toUpperCase());
         LocalDateTime currentMoment = LocalDateTime.now();
+        List<Booking> bookings;
 
         switch (state) {
             case ALL:
-                return bookingStorage.findByItemOwner(user)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwner(
+                        user, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case CURRENT:
-                return bookingStorage.findByItemOwnerAndStartDateBeforeAndEndDateAfter(user, currentMoment, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwnerCurrent(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case PAST:
-                return bookingStorage.findByItemOwnerAndEndDateBefore(user, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwnerPast(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case FUTURE:
-                return bookingStorage.findByItemOwnerAndStartDateAfter(user, currentMoment)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwnerFuture(
+                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case WAITING:
-                return bookingStorage.findByItemOwnerAndStatus(user, Status.WAITING)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwnerAndStatus(
+                        user, Status.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             case REJECTED:
-                return bookingStorage.findByItemOwnerAndStatus(user, Status.REJECTED)
-                        .stream()
-                        .map(BookingMapper::toGetBookingDtoFromBooking)
-                        .collect(Collectors.toList());
+                bookings = bookingStorage.findByItemOwnerAndStatus(
+                        user, Status.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                break;
             default:
-                return Collections.emptyList();
+                bookings = Collections.emptyList();
         }
+
+        return bookings
+                .stream()
+                .map(BookingMapper::toGetBookingDtoFromBooking)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public GetBookingDto getBookingByUserOwner(long userId, long bookingId) {
         userStorage.findById(userId).orElseThrow(
@@ -171,7 +175,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public GetBookingDto approveBooking(long userId, long bookingId, String approved) {
+    public GetBookingDto approveBooking(long userId, long bookingId, Boolean approved) {
         userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -185,15 +189,13 @@ public class BookingServiceImpl implements BookingService {
 
         Status status;
 
-        if (approved.equals("true")) {
+        if (approved) {
             if (booking.getStatus().equals(Status.APPROVED)) {
                 throw new NotAvailableException("Бронирование уже подтверждено");
             }
             status = Status.APPROVED;
-        } else if (approved.equals("false")) {
-            status = Status.REJECTED;
         } else {
-            throw new MethodArgumentException(String.format("Статус %s подтверждения не корректный", approved));
+            status = Status.REJECTED;
         }
 
         booking.setStatus(status);

@@ -10,24 +10,17 @@ import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.orderByCreatedDesc;
+import static ru.practicum.shareit.util.Constants.orderByStartDateAsc;
+import static ru.practicum.shareit.util.Constants.orderByStartDateDesc;
+
 @UtilityClass
 public class ItemMapper {
     public GetItemDto toGetItemDtoFromItem(Item item) {
-        Comparator<GetCommentDto> orderByCreatedDesc = (a, b) -> {
-            if (a.getCreated().isAfter(b.getCreated())) {
-                return 1;
-            } else if (a.getCreated().isBefore(b.getCreated())) {
-                return -1;
-            } else {
-                return 0;
-            }
-        };
-
         SortedSet<GetCommentDto> comments = new TreeSet<>(orderByCreatedDesc);
 
         if (item.getComments() != null) {
@@ -50,26 +43,6 @@ public class ItemMapper {
         LocalDateTime currentTime = LocalDateTime.now();
 
         GetItemDto getItemDto = toGetItemDtoFromItem(item);
-
-        Comparator<Booking> orderByStartDateDesc = (a, b) -> {
-            if (a.getStartDate().isAfter(b.getStartDate())) {
-                return -1;
-            } else if (a.getStartDate().isBefore(b.getStartDate())) {
-                return 1;
-            } else {
-                return 0;
-            }
-        };
-
-        Comparator<Booking> orderByStartDateAsc = (a, b) -> {
-            if (a.getStartDate().isAfter(b.getStartDate())) {
-                return 1;
-            } else if (a.getStartDate().isBefore(b.getStartDate())) {
-                return -1;
-            } else {
-                return 0;
-            }
-        };
 
         Booking lastBooking = item.getBookings()
                 .stream()

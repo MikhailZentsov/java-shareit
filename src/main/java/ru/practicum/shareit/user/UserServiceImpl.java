@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.mapper.UserMapper;
@@ -17,9 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
+    @Transactional(readOnly = true)
     @Override
     public List<GetUserDto> getAll() {
         return userStorage.findAll()
@@ -28,6 +31,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public GetUserDto getById(long id) {
         return UserMapper.toGetUserDtoFromUser(userStorage.findById(id).orElseThrow(
