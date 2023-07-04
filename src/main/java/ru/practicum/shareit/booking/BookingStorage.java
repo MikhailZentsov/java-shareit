@@ -85,7 +85,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "   and b.startDate < ?2 " +
             "   and b.endDate > ?3 " +
             "order by b.startDate desc")
-    List<Booking> findByItemOwnerAndStartDateBeforeAndEndDateAfter(User item_owner, LocalDateTime startDate, LocalDateTime endDate);
+    List<Booking> findByItemOwnerAndStartDateBeforeAndEndDateAfter(User itemOwner, LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("select b " +
             "from Booking b " +
@@ -94,7 +94,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "where i.owner = ?1 " +
             "   and b.endDate < ?2 " +
             "order by b.startDate desc")
-    List<Booking> findByItemOwnerAndEndDateBefore(User item_owner, LocalDateTime endDate);
+    List<Booking> findByItemOwnerAndEndDateBefore(User itemOwner, LocalDateTime endDate);
 
     @Query("select b " +
             "from Booking b " +
@@ -103,7 +103,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "where i.owner = ?1 " +
             "   and b.startDate > ?2 " +
             "order by b.startDate desc")
-    List<Booking> findByItemOwnerAndStartDateAfter(User item_owner, LocalDateTime startDate);
+    List<Booking> findByItemOwnerAndStartDateAfter(User itemOwner, LocalDateTime startDate);
 
     @Query("select b " +
             "from Booking b " +
@@ -112,5 +112,5 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "where i.owner = ?1 " +
             "   and b.status = ?2 " +
             "order by b.startDate desc")
-    List<Booking> findByItemOwnerAndStatus(User item_owner, Status status);
+    List<Booking> findByItemOwnerAndStatus(User itemOwner, Status status);
 }
