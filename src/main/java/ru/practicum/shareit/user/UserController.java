@@ -15,7 +15,6 @@ import ru.practicum.shareit.marker.OnUpdate;
 import ru.practicum.shareit.user.dto.CreateUpdateUserDto;
 import ru.practicum.shareit.user.dto.GetUserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -36,8 +35,7 @@ public class UserController {
     }
 
     @PostMapping
-    @Validated(OnCreate.class)
-    public GetUserDto create(@RequestBody @Valid CreateUpdateUserDto createUpdateUserDto) {
+    public GetUserDto create(@RequestBody @Validated(OnCreate.class) CreateUpdateUserDto createUpdateUserDto) {
         return userService.create(createUpdateUserDto);
     }
 

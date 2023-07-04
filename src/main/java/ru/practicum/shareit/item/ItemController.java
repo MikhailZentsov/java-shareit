@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateUpdateItemDto;
+import ru.practicum.shareit.item.dto.GetCommentDto;
 import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.marker.OnCreate;
 import ru.practicum.shareit.marker.OnUpdate;
@@ -41,9 +43,8 @@ public class ItemController {
     }
 
     @PostMapping
-    @Validated(OnCreate.class)
     public GetItemDto create(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
-                             @RequestBody @Valid CreateUpdateItemDto itemDto) {
+                             @RequestBody @Validated(OnCreate.class) CreateUpdateItemDto itemDto) {
         return itemService.create(userId, itemDto);
     }
 
@@ -65,5 +66,12 @@ public class ItemController {
     public List<GetItemDto> search(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
                                    @RequestParam String text) {
         return itemService.search(userId, text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public GetCommentDto createComment(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
+                                       @PathVariable long itemId,
+                                       @RequestBody @Valid CreateCommentDto commentDto) {
+        return itemService.createComment(userId, itemId, commentDto);
     }
 }
