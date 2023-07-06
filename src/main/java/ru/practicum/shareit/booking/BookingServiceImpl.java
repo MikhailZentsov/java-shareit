@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
@@ -23,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.SORT_BY_START_DATE_DESC;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,8 +31,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
-
-    private final Sort SORT_BY_START_DATE_DESC = Sort.by(Sort.Direction.DESC, "startDate");
 
     @Transactional(readOnly = true)
     @Override

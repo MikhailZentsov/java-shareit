@@ -1,5 +1,6 @@
 package ru.practicum.shareit.util;
 
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.GetCommentDto;
 
@@ -7,6 +8,8 @@ import java.util.Comparator;
 
 public class Constants {
     public static final String REQUEST_HEADER_USER_ID = "X-Sharer-User-Id";
+
+    public static final Sort SORT_BY_START_DATE_DESC = Sort.by(Sort.Direction.DESC, "startDate");
 
     public static final Comparator<Booking> orderByStartDateDesc = (a, b) -> {
         if (a.getStartDate().isAfter(b.getStartDate())) {
