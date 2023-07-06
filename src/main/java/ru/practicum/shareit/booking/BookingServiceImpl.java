@@ -31,6 +31,8 @@ public class BookingServiceImpl implements BookingService {
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
 
+    private final static Sort SORT_BY_START_DATE_DESC = Sort.by(Sort.Direction.DESC, "startDate");
+
     @Transactional(readOnly = true)
     @Override
     public List<GetBookingDto> getUserBookings(long userId, String stateString) {
@@ -46,27 +48,22 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByBooker(user, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBooker(user, SORT_BY_START_DATE_DESC);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBookerCurrent(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBookerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case PAST:
-                bookings = bookingStorage.findByBookerPast(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBookerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByBookerFuture(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBookerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByBookerAndStatus(
-                        user, Status.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBookerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByBookerAndStatus(
-                        user, Status.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByBookerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
                 break;
             default:
                 bookings = Collections.emptyList();
@@ -93,28 +90,22 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByItemOwner(
-                        user, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwner(user, SORT_BY_START_DATE_DESC);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByItemOwnerCurrent(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwnerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case PAST:
-                bookings = bookingStorage.findByItemOwnerPast(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwnerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByItemOwnerFuture(
-                        user, currentMoment, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwnerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByItemOwnerAndStatus(
-                        user, Status.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByItemOwnerAndStatus(
-                        user, Status.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
                 break;
             default:
                 bookings = Collections.emptyList();
