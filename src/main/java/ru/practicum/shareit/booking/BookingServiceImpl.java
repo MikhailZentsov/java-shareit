@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
 
-    private final static Sort SORT_BY_START_DATE_DESC = Sort.by(Sort.Direction.DESC, "startDate");
+    private final Sort SORT_BY_START_DATE_DESC = Sort.by(Sort.Direction.DESC, "startDate");
 
     @Transactional(readOnly = true)
     @Override
