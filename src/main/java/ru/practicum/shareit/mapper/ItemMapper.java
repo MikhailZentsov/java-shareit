@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -44,7 +45,9 @@ public class ItemMapper {
 
         GetItemDto getItemDto = toGetItemDtoFromItem(item);
 
-        Booking lastBooking = item.getBookings()
+        Set<Booking> bookings = item.getBookings();
+
+        Booking lastBooking = bookings
                 .stream()
                 .sorted(orderByStartDateDesc)
                 .filter(t -> t.getStartDate().isBefore(currentTime) &&
@@ -52,7 +55,7 @@ public class ItemMapper {
                 .findFirst()
                 .orElse(null);
 
-        Booking nextBooking = item.getBookings()
+        Booking nextBooking = bookings
                 .stream()
                 .sorted(orderByStartDateAsc)
                 .filter(t -> t.getStartDate().isAfter(currentTime) &&

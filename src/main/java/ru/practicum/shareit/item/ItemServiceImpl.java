@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.SORT_BY_ID_ASC;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<GetItemDto> getAllByUserId(long userId) {
-        List<Item> items = itemStorage.findAllyOwnerIdWithBookings(userId);
+        List<Item> items = itemStorage.findAllByOwnerIdWithBookings(userId, SORT_BY_ID_ASC);
 
         if (!items.isEmpty() && items.get(0).getOwner().getId() == userId) {
             return items.stream()
@@ -136,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
 
-        return itemStorage.search(text)
+        return itemStorage.search(text, SORT_BY_ID_ASC)
                 .stream()
                 .map(ItemMapper::toGetItemDtoFromItem)
                 .collect(Collectors.toList());

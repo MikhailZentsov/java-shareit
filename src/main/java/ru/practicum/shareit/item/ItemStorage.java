@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,7 @@ public interface ItemStorage extends JpaRepository<Item, Long> {
             "from Item i " +
             "join fetch i.owner " +
             "where i.owner.id = :id ")
-    List<Item> findAllyOwnerIdWithBookings(@Param("id") Long userId);
+    List<Item> findAllByOwnerIdWithBookings(@Param("id") Long userId, Sort sortByIdAsc);
 
     @Query("select i " +
             "from Item i " +
@@ -28,5 +29,5 @@ public interface ItemStorage extends JpaRepository<Item, Long> {
             "where lower(i.name) like lower(concat('%', :text, '%')) " +
             "   or lower(i.description) like lower(concat('%', :text, '%')) " +
             "   and i.available = true ")
-    List<Item> search(@Param("text") String text);
+    List<Item> search(@Param("text") String text, Sort sortByIdAsc);
 }

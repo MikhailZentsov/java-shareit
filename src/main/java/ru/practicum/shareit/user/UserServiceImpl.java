@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -16,6 +15,8 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.SORT_BY_ID_ASC;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public List<GetUserDto> getAll() {
-        return userStorage.findAll()
+        return userStorage.findAll(SORT_BY_ID_ASC)
                 .stream()
                 .map(UserMapper::toGetUserDtoFromUser)
                 .collect(Collectors.toList());
@@ -53,7 +54,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public GetUserDto update(long id, CreateUpdateUserDto createUpdateUserDto) {
         User user = userStorage.findById(id).orElseThrow(
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             return UserMapper.toGetUserDtoFromUser(
-                    userStorage.save(user)
+                    userStorage.saveAndFlush(user)
             );
         } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException(String.format(
