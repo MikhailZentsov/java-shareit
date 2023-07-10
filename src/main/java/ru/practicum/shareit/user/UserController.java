@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.marker.ToLog;
 import ru.practicum.shareit.marker.OnCreate;
 import ru.practicum.shareit.marker.OnUpdate;
 import ru.practicum.shareit.user.dto.CreateUpdateUserDto;
 import ru.practicum.shareit.user.dto.GetUserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
+@ToLog
 public class UserController {
     private final UserService userService;
 
@@ -36,8 +36,7 @@ public class UserController {
     }
 
     @PostMapping
-    @Validated(OnCreate.class)
-    public GetUserDto create(@RequestBody @Valid CreateUpdateUserDto createUpdateUserDto) {
+    public GetUserDto create(@RequestBody @Validated(OnCreate.class) CreateUpdateUserDto createUpdateUserDto) {
         return userService.create(createUpdateUserDto);
     }
 
