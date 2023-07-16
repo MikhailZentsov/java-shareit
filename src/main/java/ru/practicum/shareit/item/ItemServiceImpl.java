@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.MethodArgumentException;
@@ -13,6 +15,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.mapper.CommentMapper;
 import ru.practicum.shareit.mapper.ItemMapper;
+import ru.practicum.shareit.request.ItemRequestStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 
@@ -30,11 +34,13 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
     private final CommentStorage commentStorage;
+    private final ItemRequestStorage requestStorage;
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetItemDto> getAllByUserId(long userId) {
-        List<Item> items = itemStorage.findAllByOwnerIdWithBookings(userId, SORT_BY_ID_ASC);
+    public List<GetItemDto> getAllByUserId(long userId, int from, int size) {
+        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_ID_ASC);
+        List<Item> items = itemStorage.findAllByOwnerId(userId, pageable);
 
         if (!items.isEmpty() && items.get(0).getOwner().getId() == userId) {
             return items.stream()
@@ -54,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Item item = itemStorage.findByIdWithOwner(itemId).orElseThrow(
+        Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> new NotFoundException("Вещь не найдена")
         );
 
@@ -71,8 +77,18 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Item item = ItemMapper.toGetItemFromCreateUpdateItemDto(createUpdateItemDto);
+        ItemRequest request = null;
+        if (createUpdateItemDto.getRequestId() != null) {
+           request = requestStorage.findById(createUpdateItemDto.getRequestId()).orElseThrow(
+                    () -> new NotFoundException("Запрос на вещь не найден")
+            );
+        }
+
+        Item item = ItemMapper.toItemFromCreateUpdateItemDto(createUpdateItemDto);
         item.setOwner(user);
+        if (request != null) {
+            item.setRequest(request);
+        }
 
         return ItemMapper.toGetItemDtoFromItem(itemStorage.save(item));
     }
@@ -83,7 +99,7 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Item item = itemStorage.findByIdWithOwner(itemId).orElseThrow(
+        Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> new NotFoundException("Вещь не найдена")
         );
 
@@ -114,7 +130,7 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Item item = itemStorage.findByIdWithOwner(itemId).orElseThrow(
+        Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> new NotFoundException("Вещь не найдена")
         );
 
@@ -129,7 +145,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetItemDto> search(long userId, String text) {
+    public List<GetItemDto> search(long userId, String text, int from, int size) {
         userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -138,7 +154,9 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
 
-        return itemStorage.search(text, SORT_BY_ID_ASC)
+        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_ID_ASC);
+
+        return itemStorage.search(text, pageable)
                 .stream()
                 .map(ItemMapper::toGetItemDtoFromItem)
                 .collect(Collectors.toList());
@@ -150,7 +168,7 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Item item = itemStorage.findByIdWithOwner(itemId).orElseThrow(
+        Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> new NotFoundException("Вещь не найдена")
         );
 

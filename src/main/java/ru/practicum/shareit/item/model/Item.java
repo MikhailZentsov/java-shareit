@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -24,7 +25,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "items", schema = "public")
-@EqualsAndHashCode(exclude = {"name", "description", "available", "owner"})
+@EqualsAndHashCode(exclude = {"name", "description", "available", "owner", "request", "bookings", "comments"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -46,6 +47,10 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private ItemRequest request;
 
     @OneToMany
     @JoinColumn(name = "item_id")

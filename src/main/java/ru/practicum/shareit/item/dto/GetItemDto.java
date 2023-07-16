@@ -13,6 +13,7 @@ public class GetItemDto {
     private String name;
     private String description;
     private Boolean available;
+    private Long requestId;
     private GetItemBookingDto lastBooking;
     private GetItemBookingDto nextBooking;
     private SortedSet<GetCommentDto> comments;

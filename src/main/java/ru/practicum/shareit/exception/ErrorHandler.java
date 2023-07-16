@@ -12,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 @Slf4j
@@ -54,7 +55,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleThrowable(final ConstraintViolationException e) {
+    public Map<String, String> handleConstraintViolation(final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
@@ -67,20 +68,45 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class,
+    @ExceptionHandler({
             MethodArgumentException.class,
-            ServletRequestBindingException.class,
             ValidationException.class,
             NotAvailableException.class,
             NotValidDateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleThrowable(final RuntimeException e) {
+    public Map<String, String> handleRuntime(final RuntimeException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getMessage());
         return Map.of(
                 "error", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler({ServletRequestBindingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleServletRequestBinding(final ServletRequestBindingException e) {
+        log.debug("Получен статус {} {}. Причина: {}",
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage());
+        return Map.of(
+                "error", Objects.requireNonNull(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleMethodArgumentNotValid(final MethodArgumentNotValidException e) {
+        log.debug("Получен статус {} {}. Причина: {}",
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage());
+        return Map.of(
+                "error", String.format("Поле %s не прошло валидацию по причине: %s",
+                        Objects.requireNonNull(e.getFieldError()).getField(),
+                        e.getFieldError().getDefaultMessage())
         );
     }
 }

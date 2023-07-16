@@ -17,6 +17,8 @@ import ru.practicum.shareit.marker.ToLog;
 import ru.practicum.shareit.validator.ValuesAllowedConstraint;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 import static ru.practicum.shareit.util.Constants.REQUEST_HEADER_USER_ID;
@@ -39,8 +41,10 @@ public class BookingController {
                                                                "waiting",
                                                                "rejected"},
                                                        message = "Unknown state: UNSUPPORTED_STATUS")
-                                               @RequestParam(defaultValue = "all") String state) {
-        return bookingService.getUserBookings(userId, state);
+                                               @RequestParam(defaultValue = "all") String state,
+                                               @RequestParam(defaultValue = "0") @Min(0) @Max(Integer.MAX_VALUE) int from,
+                                               @RequestParam(defaultValue = "20") @Min(1) @Max(20) int size) {
+        return bookingService.getUserBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
@@ -53,8 +57,10 @@ public class BookingController {
                                                                 "waiting",
                                                                 "rejected"},
                                                         message = "Unknown state: UNSUPPORTED_STATUS")
-                                                @RequestParam(defaultValue = "all") String state) {
-        return bookingService.getOwnerBookings(userId, state);
+                                                @RequestParam(defaultValue = "all") String state,
+                                                @RequestParam(defaultValue = "0") @Min(0) @Max(Integer.MAX_VALUE) int from,
+                                                @RequestParam(defaultValue = "20") @Min(1) @Max(20) int size) {
+        return bookingService.getOwnerBookings(userId, state, from, size);
     }
 
     @GetMapping("/{bookingId}")

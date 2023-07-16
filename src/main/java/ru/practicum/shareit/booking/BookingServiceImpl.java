@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
@@ -34,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetBookingDto> getUserBookings(long userId, String stateString) {
+    public List<GetBookingDto> getUserBookings(long userId, String stateString, int from, int size) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -45,24 +47,26 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentMoment = LocalDateTime.now();
         List<Booking> bookings;
 
+        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_START_DATE_DESC);
+
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByBooker(user, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBooker(user, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBookerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStartDateBeforeAndEndDateAfter(user, currentMoment, currentMoment, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByBookerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndEndDateBefore(user, currentMoment, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByBookerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStartDateAfter(user, currentMoment, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByBookerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStatus(user, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByBookerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStatus(user, Status.REJECTED, pageable);
                 break;
             default:
                 bookings = Collections.emptyList();
@@ -76,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetBookingDto> getOwnerBookings(long userId, String stateString) {
+    public List<GetBookingDto> getOwnerBookings(long userId, String stateString, int from, int size) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -87,24 +91,26 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentMoment = LocalDateTime.now();
         List<Booking> bookings;
 
+        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_START_DATE_DESC);
+
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByItemOwner(user, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwner(user, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByItemOwnerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStartDateBeforeAndEndDateAfter(user, currentMoment, currentMoment, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByItemOwnerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndEndDateBefore(user, currentMoment, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByItemOwnerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStartDateAfter(user, currentMoment, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStatus(user, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStatus(user, Status.REJECTED, pageable);
                 break;
             default:
                 bookings = Collections.emptyList();

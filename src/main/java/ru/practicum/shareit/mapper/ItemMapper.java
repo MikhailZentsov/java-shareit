@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.CreateUpdateItemDto;
 import ru.practicum.shareit.item.dto.GetBookingForItemDto;
 import ru.practicum.shareit.item.dto.GetCommentDto;
 import ru.practicum.shareit.item.dto.GetItemDto;
+import ru.practicum.shareit.item.dto.GetItemForGetItemRequestDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .comments(comments)
                 .build();
     }
@@ -69,7 +71,7 @@ public class ItemMapper {
         return getItemDto;
     }
 
-    public Item toGetItemFromCreateUpdateItemDto(CreateUpdateItemDto createUpdateItemDto) {
+    public Item toItemFromCreateUpdateItemDto(CreateUpdateItemDto createUpdateItemDto) {
         return Item.builder()
                 .name(createUpdateItemDto.getName())
                 .description(createUpdateItemDto.getDescription())
@@ -81,6 +83,16 @@ public class ItemMapper {
         return GetBookingForItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
+                .build();
+    }
+
+    public GetItemForGetItemRequestDto toGetItemForGetItemRequestDtoFromItem(Item item) {
+        return GetItemForGetItemRequestDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
 }

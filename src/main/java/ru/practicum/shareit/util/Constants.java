@@ -13,6 +13,8 @@ public class Constants {
 
     public static final Sort SORT_BY_ID_ASC = Sort.by(Sort.Direction.ASC, "id");
 
+    public static final Sort SORT_BY_CREATED = Sort.by(Sort.Direction.DESC, "created");
+
     public static final Comparator<Booking> orderByStartDateDesc = (a, b) -> {
         if (a.getStartDate().isAfter(b.getStartDate())) {
             return -1;

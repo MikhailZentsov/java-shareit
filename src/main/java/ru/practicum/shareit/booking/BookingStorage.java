@@ -1,109 +1,33 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.lang.NonNull;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface BookingStorage extends JpaRepository<Booking, Long> {
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "join fetch i.owner " +
-            "where b.id = :id " +
-            "order by b.startDate desc")
-    @NonNull Optional<Booking> findById(@Param("id") @NonNull Long id);
+    List<Booking> findAllByBooker(User booker, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item " +
-            "where b.booker = :user ")
-    List<Booking> findByBooker(@Param("user") User booker, Sort startDate);
+    List<Booking> findAllByBookerAndStartDateBeforeAndEndDateAfter(User booker, LocalDateTime time1, LocalDateTime time2, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item " +
-            "where b.booker = :user " +
-            "   and b.startDate < :time " +
-            "   and b.endDate > :time ")
-    List<Booking> findByBookerCurrent(
-            @Param("user") User booker,
-            @Param("time") LocalDateTime currentTime,
-            Sort startDate);
+    List<Booking> findAllByBookerAndEndDateBefore(User booker, LocalDateTime currentTime, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item " +
-            "where b.booker = :user " +
-            "   and b.endDate < :time ")
-    List<Booking> findByBookerPast(@Param("user") User booker, @Param("time") LocalDateTime currentTime, Sort startDate);
+    List<Booking> findAllByBookerAndStartDateAfter(User booker, LocalDateTime currentTime, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item " +
-            "where b.booker = :user " +
-            "   and b.startDate > :time ")
-    List<Booking> findByBookerFuture(@Param("user") User booker, @Param("time") LocalDateTime currentTime, Sort startDate);
+    List<Booking> findAllByBookerAndStatus(User booker, Status status, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item " +
-            "where b.booker = :user " +
-            "   and b.status = :status ")
-    List<Booking> findByBookerAndStatus(@Param("user") User booker, @Param("status") Status status, Sort startDate);
+    List<Booking> findAllByItemOwner(User itemOwner, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "where i.owner = :user ")
-    List<Booking> findByItemOwner(@Param("user") User itemOwner, Sort startDate);
+    List<Booking> findAllByItemOwnerAndStartDateBeforeAndEndDateAfter(User itemOwner, LocalDateTime time1, LocalDateTime time2, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "where i.owner = :user " +
-            "   and b.startDate < :time " +
-            "   and b.endDate > :time ")
-    List<Booking> findByItemOwnerCurrent(@Param("user") User itemOwner, @Param("time") LocalDateTime currentTime, Sort startDate);
+    List<Booking> findAllByItemOwnerAndEndDateBefore(User itemOwner, LocalDateTime currentTime, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "where i.owner = :user " +
-            "   and b.endDate < :time ")
-    List<Booking> findByItemOwnerPast(@Param("user") User itemOwner, @Param("time") LocalDateTime currentTime, Sort startDate);
+    List<Booking> findAllByItemOwnerAndStartDateAfter(User itemOwner, LocalDateTime currentTime, Pageable pageable);
 
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "where i.owner = :user " +
-            "   and b.startDate > :time ")
-    List<Booking> findByItemOwnerFuture(@Param("user") User itemOwner, @Param("time") LocalDateTime currentTime, Sort startDate);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join fetch b.booker " +
-            "join fetch b.item i " +
-            "where i.owner = :user " +
-            "   and b.status = :status ")
-    List<Booking> findByItemOwnerAndStatus(@Param("user") User itemOwner, @Param("status") Status status, Sort startDate);
+    List<Booking> findAllByItemOwnerAndStatus(User itemOwner, Status status, Pageable pageable);
 }
