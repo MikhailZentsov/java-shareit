@@ -49,7 +49,7 @@ public class ItemMapper {
 
         Set<Booking> bookings = item.getBookings();
 
-        if(bookings != null) {
+        if (bookings != null) {
             Booking lastBooking = bookings
                     .stream()
                     .sorted(orderByStartDateDesc)

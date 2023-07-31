@@ -30,8 +30,8 @@ class ErrorHandlerTest {
 
     @Test
     void testHandleInternalError() {
-        Throwable Throwable = new Throwable("Ошибка приложения");
-        Map<String, String> result = errorHandler.handleThrowable(Throwable);
+        Throwable throwable = new Throwable("Ошибка приложения");
+        Map<String, String> result = errorHandler.handleThrowable(throwable);
         assertEquals("Ошибка приложения", result.get("error"));
     }
 }

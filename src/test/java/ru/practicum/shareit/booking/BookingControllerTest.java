@@ -122,8 +122,9 @@ class BookingControllerTest {
                 .build();
 
         listWith20Bookings = new ArrayList<>();
+
         for (int i = 0; i < 20; i++) {
-            listWith20Bookings.add(getBookingDto.toBuilder().id(i+2L).build());
+            listWith20Bookings.add(getBookingDto.toBuilder().id(i + 2L).build());
         }
     }
 

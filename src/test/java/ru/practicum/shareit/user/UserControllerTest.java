@@ -111,7 +111,7 @@ class UserControllerTest {
                 .build();
 
         listOfUsers = new ArrayList<>();
-        
+
         for (int i = 0; i < 20; i++) {
             listOfUsers.add(getUserDto.toBuilder().id(i + 2L).build());
         }
