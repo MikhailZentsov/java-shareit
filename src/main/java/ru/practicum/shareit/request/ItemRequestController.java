@@ -49,7 +49,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public GetItemRequestDto getRequestById(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
-                                            @PathVariable @Min(1) @Max(Long.MAX_VALUE) long requestId) {
+                                            @PathVariable long requestId) {
         return itemRequestService.getRequestById(userId, requestId);
     }
 }

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.marker.ToLog;
 import ru.practicum.shareit.marker.OnCreate;
 import ru.practicum.shareit.marker.OnUpdate;
+import ru.practicum.shareit.marker.ToLog;
 import ru.practicum.shareit.user.dto.CreateUpdateUserDto;
 import ru.practicum.shareit.user.dto.GetUserDto;
 
@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@Validated
 @ToLog
 public class UserController {
     private final UserService userService;

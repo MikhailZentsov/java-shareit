@@ -1,10 +1,11 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.MethodArgumentException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -19,8 +20,10 @@ import ru.practicum.shareit.request.ItemRequestStorage;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.OffsetBasedPageRequest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,17 +42,15 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<GetItemDto> getAllByUserId(long userId, int from, int size) {
-        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_ID_ASC);
-        List<Item> items = itemStorage.findAllByOwnerId(userId, pageable);
+        Pageable pageable = new OffsetBasedPageRequest(from, size, SORT_BY_ID_ASC);
+        List<Item> items = itemStorage.findAllByOwnerId(userId, pageable).getContent();
 
         if (!items.isEmpty() && items.get(0).getOwner().getId() == userId) {
             return items.stream()
                     .map(ItemMapper::toGetItemWIthBookingDtoFromItem)
                     .collect(Collectors.toList());
         } else {
-            return items.stream()
-                    .map(ItemMapper::toGetItemDtoFromItem)
-                    .collect(Collectors.toList());
+            return new ArrayList<>();
         }
     }
 
@@ -77,16 +78,13 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        ItemRequest request = null;
-        if (createUpdateItemDto.getRequestId() != null) {
-           request = requestStorage.findById(createUpdateItemDto.getRequestId()).orElseThrow(
-                    () -> new NotFoundException("Запрос на вещь не найден")
-            );
-        }
-
         Item item = ItemMapper.toItemFromCreateUpdateItemDto(createUpdateItemDto);
         item.setOwner(user);
-        if (request != null) {
+
+        if (createUpdateItemDto.getRequestId() != null) {
+            ItemRequest request = requestStorage.findById(createUpdateItemDto.getRequestId()).orElseThrow(
+                    () -> new NotFoundException("Запрос на вещь не найден")
+            );
             item.setRequest(request);
         }
 
@@ -154,9 +152,10 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
 
-        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_ID_ASC);
+        Pageable pageable = new OffsetBasedPageRequest(from, size, SORT_BY_ID_ASC);
 
         return itemStorage.search(text, pageable)
+                .getContent()
                 .stream()
                 .map(ItemMapper::toGetItemDtoFromItem)
                 .collect(Collectors.toList());
@@ -187,10 +186,11 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private Boolean isBookingByUser(User user, Item item) {
+    private @NotNull Boolean isBookingByUser(User user, @NotNull Item item) {
         LocalDateTime currentTime = LocalDateTime.now();
-        return item.getBookings()
-                .stream()
-                .anyMatch(t -> t.getBooker().equals(user) && t.getEndDate().isBefore(currentTime));
+        return item.getBookings() != null && item.getBookings().stream()
+                .anyMatch(t -> t.getBooker().equals(user)
+                        && t.getEndDate().isBefore(currentTime)
+                && t.getStatus().equals(Status.APPROVED));
     }
 }

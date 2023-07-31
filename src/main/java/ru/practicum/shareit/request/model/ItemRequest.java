@@ -25,7 +25,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "request", schema = "public")
-@EqualsAndHashCode(exclude = {"description", "requester", "created", "requester", "items"})
+@EqualsAndHashCode(exclude = {"description", "created", "requester", "items"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

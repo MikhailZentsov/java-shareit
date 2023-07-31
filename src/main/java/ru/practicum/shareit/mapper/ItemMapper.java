@@ -49,24 +49,26 @@ public class ItemMapper {
 
         Set<Booking> bookings = item.getBookings();
 
-        Booking lastBooking = bookings
-                .stream()
-                .sorted(orderByStartDateDesc)
-                .filter(t -> t.getStartDate().isBefore(currentTime) &&
-                        t.getStatus().equals(Status.APPROVED))
-                .findFirst()
-                .orElse(null);
+        if(bookings != null) {
+            Booking lastBooking = bookings
+                    .stream()
+                    .sorted(orderByStartDateDesc)
+                    .filter(t -> t.getStartDate().isBefore(currentTime) &&
+                            t.getStatus().equals(Status.APPROVED))
+                    .findFirst()
+                    .orElse(null);
 
-        Booking nextBooking = bookings
-                .stream()
-                .sorted(orderByStartDateAsc)
-                .filter(t -> t.getStartDate().isAfter(currentTime) &&
-                        t.getStatus().equals(Status.APPROVED))
-                .findFirst()
-                .orElse(null);
+            Booking nextBooking = bookings
+                    .stream()
+                    .sorted(orderByStartDateAsc)
+                    .filter(t -> t.getStartDate().isAfter(currentTime) &&
+                            t.getStatus().equals(Status.APPROVED))
+                    .findFirst()
+                    .orElse(null);
 
-        getItemDto.setLastBooking(BookingMapper.toGetItemBookingDtoFromBooking(lastBooking));
-        getItemDto.setNextBooking(BookingMapper.toGetItemBookingDtoFromBooking(nextBooking));
+            getItemDto.setLastBooking(BookingMapper.toGetBookingForItemDtoFromBooking(lastBooking));
+            getItemDto.setNextBooking(BookingMapper.toGetBookingForItemDtoFromBooking(nextBooking));
+        }
 
         return getItemDto;
     }

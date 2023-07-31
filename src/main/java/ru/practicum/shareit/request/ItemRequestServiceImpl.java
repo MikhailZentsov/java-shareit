@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +11,13 @@ import ru.practicum.shareit.request.dto.GetItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.OffsetBasedPageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constants.SORT_BY_CREATED;
+import static ru.practicum.shareit.util.Constants.SORT_BY_CREATED_DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        return itemRequestStorage.getAllByRequesterId(requester.getId(), SORT_BY_CREATED)
+        return itemRequestStorage.getAllByRequester(requester, SORT_BY_CREATED_DESC)
                 .stream()
                 .map(ItemRequestMapper::toGetItemRequestDtoFromItemRequest)
                 .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 () -> new NotFoundException("Пользователь не найден")
         );
 
-        Pageable pageable = PageRequest.of(from/size, size, SORT_BY_CREATED);
+        Pageable pageable = new OffsetBasedPageRequest(from, size, SORT_BY_CREATED_DESC);
 
         return itemRequestStorage.getAllByRequesterNot(requester, pageable)
                 .stream()
