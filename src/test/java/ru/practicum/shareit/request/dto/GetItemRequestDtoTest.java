@@ -48,7 +48,7 @@ class GetItemRequestDtoTest {
 
     @Test
     void shouldDeserialize() throws IOException {
-        String content = "{\"id\":\"1\",\"description\":\"requestText\",\"created\":\""+ time + "\"}";
+        String content = "{\"id\":\"1\",\"description\":\"requestText\",\"created\":\"" + time + "\"}";
 
         ObjectContent<GetItemRequestDto> result = json.parse(content);
 
