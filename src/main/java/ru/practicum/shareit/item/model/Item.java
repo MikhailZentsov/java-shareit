@@ -2,9 +2,10 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -22,10 +23,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(exclude = {"name", "description", "available", "owner", "request", "bookings", "comments"})
 @Entity
 @Table(name = "items", schema = "public")
-@EqualsAndHashCode(exclude = {"name", "description", "available", "owner", "request", "bookings", "comments"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

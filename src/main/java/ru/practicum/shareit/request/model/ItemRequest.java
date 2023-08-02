@@ -2,9 +2,10 @@ package ru.practicum.shareit.request.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -22,10 +23,12 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(exclude = {"description", "created", "requester", "items"})
 @Entity
 @Table(name = "request", schema = "public")
-@EqualsAndHashCode(exclude = {"description", "created", "requester", "items"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

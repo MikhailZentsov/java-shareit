@@ -2,9 +2,10 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.shareit.item.model.Item;
@@ -22,10 +23,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(exclude = {"startDate", "endDate", "item", "booker", "status"})
 @Entity
 @Table(name = "bookings", schema = "public")
-@EqualsAndHashCode(exclude = {"startDate", "endDate", "item", "booker", "status"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

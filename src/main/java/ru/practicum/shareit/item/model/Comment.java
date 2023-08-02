@@ -2,9 +2,10 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
@@ -18,10 +19,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(exclude = {"text", "created", "item", "author"})
 @Entity
 @Table(name = "comments", schema = "public")
-@EqualsAndHashCode(exclude = {"text", "created", "item", "author"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
