@@ -2,9 +2,11 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Builder
-public class GetBookingUserDto {
+@EqualsAndHashCode
+public class GetUserForGetBookingDto {
     private Long id;
 }

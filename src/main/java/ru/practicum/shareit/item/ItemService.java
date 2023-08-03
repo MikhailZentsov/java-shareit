@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<GetItemDto> getAllByUserId(long userId);
+    List<GetItemDto> getAllByUserId(long userId, int from, int size);
 
     GetItemDto getOneById(long userId, long itemId);
 
@@ -19,7 +19,7 @@ public interface ItemService {
 
     void delete(long userId, long itemId);
 
-    List<GetItemDto> search(long userId, String text);
+    List<GetItemDto> search(long userId, String text, int from, int size);
 
     GetCommentDto createComment(long userId, long itemId, CreateCommentDto commentDto);
 }

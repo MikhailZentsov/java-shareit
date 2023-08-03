@@ -2,18 +2,19 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.GetItemBookingDto;
+import ru.practicum.shareit.booking.dto.GetBookingForGetItemDto;
 
 import java.util.SortedSet;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class GetItemDto {
     private Long id;
     private String name;
     private String description;
     private Boolean available;
-    private GetItemBookingDto lastBooking;
-    private GetItemBookingDto nextBooking;
+    private Long requestId;
+    private GetBookingForGetItemDto lastBooking;
+    private GetBookingForGetItemDto nextBooking;
     private SortedSet<GetCommentDto> comments;
 }

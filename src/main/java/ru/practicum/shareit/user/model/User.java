@@ -2,9 +2,11 @@ package ru.practicum.shareit.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,10 +15,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(exclude = {"name", "email"})
 @Entity
 @Table(name = "users", schema = "public")
-@EqualsAndHashCode(exclude = {"name", "email"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

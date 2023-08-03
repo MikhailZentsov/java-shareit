@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
@@ -16,9 +18,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.mapper.BookingMapper;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.OffsetBasedPageRequest;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetBookingDto> getUserBookings(long userId, String stateString) {
+    public List<GetBookingDto> getUserBookings(long userId, @NotNull String stateString, int from, int size) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -45,27 +47,29 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentMoment = LocalDateTime.now();
         List<Booking> bookings;
 
+        Pageable pageable = new OffsetBasedPageRequest(from, size, SORT_BY_START_DATE_DESC);
+
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByBooker(user, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBooker(user, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBookerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndCurrent(user, currentMoment, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByBookerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndPast(user, currentMoment, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByBookerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndFuture(user, currentMoment, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByBookerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStatus(user, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByBookerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByBookerAndStatus(user, Status.REJECTED, pageable);
                 break;
             default:
-                bookings = Collections.emptyList();
+                bookings = List.of();
         }
 
         return bookings
@@ -76,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GetBookingDto> getOwnerBookings(long userId, String stateString) {
+    public List<GetBookingDto> getOwnerBookings(long userId, @NotNull String stateString, int from, int size) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
@@ -87,27 +91,29 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentMoment = LocalDateTime.now();
         List<Booking> bookings;
 
+        Pageable pageable = new OffsetBasedPageRequest(from, size, SORT_BY_START_DATE_DESC);
+
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findByItemOwner(user, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwner(user, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByItemOwnerCurrent(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndCurrent(user, currentMoment, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByItemOwnerPast(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndPast(user, currentMoment, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByItemOwnerFuture(user, currentMoment, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndFuture(user, currentMoment, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.WAITING, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStatus(user, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByItemOwnerAndStatus(user, Status.REJECTED, SORT_BY_START_DATE_DESC);
+                bookings = bookingStorage.findAllByItemOwnerAndStatus(user, Status.REJECTED, pageable);
                 break;
             default:
-                bookings = Collections.emptyList();
+                bookings = List.of();
         }
 
         return bookings
@@ -134,7 +140,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public GetBookingDto create(long userId, CreateBookingDto createBookingDto) {
+    public GetBookingDto create(long userId, @NotNull CreateBookingDto createBookingDto) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
