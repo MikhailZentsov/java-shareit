@@ -25,6 +25,7 @@ public class RequestClient extends BaseClient {
                         .build()
         );
     }
+
     public ResponseEntity<Object> createRequest(long userId, CreateItemRequestDto itemRequestDto) {
         return post("", userId, itemRequestDto);
     }

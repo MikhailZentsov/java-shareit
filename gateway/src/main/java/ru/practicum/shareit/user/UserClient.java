@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.user.dto.CreateUpdateUserDto;
-import ru.practicum.shareit.user.dto.GetUserDto;
 
-import java.util.List;
 import java.util.Map;
 
 @Service
