@@ -52,7 +52,7 @@ public class GatewayUserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteById(@PathVariable long userId) {
-        client.deleteById(userId);
+    public ResponseEntity<Object> deleteById(@PathVariable long userId) {
+        return client.deleteById(userId);
     }
 }
