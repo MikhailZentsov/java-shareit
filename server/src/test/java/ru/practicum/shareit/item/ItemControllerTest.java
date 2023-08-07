@@ -45,11 +45,7 @@ class ItemControllerTest {
     private ItemService itemService;
 
     private static CreateUpdateItemDto correctItem;
-    private static CreateUpdateItemDto itemWithoutName;
-    private static CreateUpdateItemDto itemWithoutDescription;
-    private static CreateUpdateItemDto itemWithoutAvailable;
     private static CreateCommentDto correctComment;
-    private static CreateCommentDto commentWithBlankText;
     private static GetItemDto getItemDto;
     private static GetCommentDto getCommentDto;
     private static List<GetItemDto> listOfItems;
@@ -62,27 +58,8 @@ class ItemControllerTest {
                 .available(true)
                 .build();
 
-        itemWithoutName = CreateUpdateItemDto.builder()
-                .description("description")
-                .available(true)
-                .build();
-
-        itemWithoutDescription = CreateUpdateItemDto.builder()
-                .name("item")
-                .available(true)
-                .build();
-
-        itemWithoutAvailable = CreateUpdateItemDto.builder()
-                .name("item")
-                .description("description")
-                .build();
-
         correctComment = CreateCommentDto.builder()
                 .text("comment")
-                .build();
-
-        commentWithBlankText = CreateCommentDto.builder()
-                .text(" ")
                 .build();
 
         getItemDto = GetItemDto.builder()
@@ -106,42 +83,6 @@ class ItemControllerTest {
     @Test
     void shouldGetExceptionWithCreateWithoutHeader() throws Exception {
         mockMvc.perform(post("/items")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).create(anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateItemWithoutName() throws Exception {
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutName);
-
-        mockMvc.perform(post("/items")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).create(anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateItemWithoutDescription() throws Exception {
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutDescription);
-
-        mockMvc.perform(post("/items")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).create(anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateItemWithoutAvailable() throws Exception {
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutAvailable);
-
-        mockMvc.perform(post("/items")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         verify(itemService, never()).create(anyLong(), any(CreateUpdateItemDto.class));
@@ -172,63 +113,6 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         verify(itemService, never()).update(anyLong(), anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateItemWithoutName() throws Exception {
-        when(itemService.update(anyLong(), anyLong(), any(CreateUpdateItemDto.class)))
-                .thenReturn(getItemDto);
-
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutName);
-
-        mockMvc.perform(patch("/items/1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(getItemDto.getId()))
-                .andExpect(jsonPath("$.name").value(getItemDto.getName()))
-                .andExpect(jsonPath("$.description").value(getItemDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(getItemDto.getAvailable()));
-        verify(itemService, times(1)).update(anyLong(), anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateItemWithoutDescription() throws Exception {
-        when(itemService.update(anyLong(), anyLong(), any(CreateUpdateItemDto.class)))
-                .thenReturn(getItemDto);
-
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutDescription);
-
-        mockMvc.perform(patch("/items/1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(getItemDto.getId()))
-                .andExpect(jsonPath("$.name").value(getItemDto.getName()))
-                .andExpect(jsonPath("$.description").value(getItemDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(getItemDto.getAvailable()));
-        verify(itemService, times(1)).update(anyLong(), anyLong(), any(CreateUpdateItemDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateItemWithoutAvailable() throws Exception {
-        when(itemService.update(anyLong(), anyLong(), any(CreateUpdateItemDto.class)))
-                .thenReturn(getItemDto);
-
-        String jsonItem = objectMapper.writeValueAsString(itemWithoutAvailable);
-
-        mockMvc.perform(patch("/items/1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonItem)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(getItemDto.getId()))
-                .andExpect(jsonPath("$.name").value(getItemDto.getName()))
-                .andExpect(jsonPath("$.description").value(getItemDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(getItemDto.getAvailable()));
-        verify(itemService, times(1)).update(anyLong(), anyLong(), any(CreateUpdateItemDto.class));
     }
 
     @Test
@@ -273,42 +157,6 @@ class ItemControllerTest {
     @Test
     void shouldGetExceptionWithGetAllByUserIdWithoutHeader() throws Exception {
         mockMvc.perform(get("/items")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).getAllByUserId(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllByUserIdWithFromLessThen0() throws Exception {
-        mockMvc.perform(get("/items?from=-1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).getAllByUserId(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllByUserIdWithFromMoreThenMaxInt() throws Exception {
-        mockMvc.perform(get("/items?from=2147483648")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).getAllByUserId(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllByUserIdWithSizeLessThen1() throws Exception {
-        mockMvc.perform(get("/items?size=0")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).getAllByUserId(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllByUserIdWithSizeMoreThen20() throws Exception {
-        mockMvc.perform(get("/items?size=21")
-                        .header(REQUEST_HEADER_USER_ID, "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         verify(itemService, never()).getAllByUserId(anyLong(), anyInt(), anyInt());
@@ -365,51 +213,6 @@ class ItemControllerTest {
     }
 
     @Test
-    void shouldGetExceptionWithSearchWithoutText() throws Exception {
-        mockMvc.perform(get("/items/search")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithSearchWithFromLessThen0() throws Exception {
-        mockMvc.perform(get("/items/search?text=kek&from=-1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithSearchWithFromMoreThenMaxInt() throws Exception {
-        mockMvc.perform(get("/items/search?text=kek&from=2147483648")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithSearchWithSizeLessThen1() throws Exception {
-        mockMvc.perform(get("/items/search?text=kek&size=0")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldGetExceptionWithSearchWithSizeMoreThen21() throws Exception {
-        mockMvc.perform(get("/items/search?text=kek&size=21")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
     void shouldSearch() throws Exception {
         when(itemService.search(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(listOfItems);
@@ -430,18 +233,6 @@ class ItemControllerTest {
     @Test
     void shouldGetExceptionWithCommentWithoutHeader() throws Exception {
         mockMvc.perform(post("/items/1/comment")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).createComment(anyLong(), anyLong(), any(CreateCommentDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCommentWithBlankText() throws Exception {
-        String jsonComment = objectMapper.writeValueAsString(commentWithBlankText);
-
-        mockMvc.perform(post("/items/1/comment")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonComment)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         verify(itemService, never()).createComment(anyLong(), anyLong(), any(CreateCommentDto.class));

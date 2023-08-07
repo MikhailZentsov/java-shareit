@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,15 +41,6 @@ class UserControllerTest {
     private UserService userService;
 
     private static CreateUpdateUserDto correctUser;
-    private static CreateUpdateUserDto userWithoutName;
-    private static CreateUpdateUserDto userWithBlankName;
-    private static CreateUpdateUserDto userWithoutEmail;
-    private static CreateUpdateUserDto userWithWrongEmailNoName;
-    private static CreateUpdateUserDto userWithWrongEmailNoDomainSecondLevel;
-    private static CreateUpdateUserDto userWithWrongEmailNoDomainFirstLevel;
-    private static CreateUpdateUserDto userWithWrongEmailNoAt;
-    private static CreateUpdateUserDto userWithWrongEmailToShortDomainFirstLevel;
-    private static CreateUpdateUserDto userWithWrongEmailToLongDomainFirstLevel;
     private static List<GetUserDto> listOfUsers;
     private static GetUserDto getUserDto;
 
@@ -59,49 +49,6 @@ class UserControllerTest {
         correctUser = CreateUpdateUserDto.builder()
                 .name("user")
                 .email("user@user.com")
-                .build();
-
-        userWithoutName = CreateUpdateUserDto.builder()
-                .email("user@user.com")
-                .build();
-
-        userWithBlankName = CreateUpdateUserDto.builder()
-                .name("")
-                .email("user@user.com")
-                .build();
-
-        userWithoutEmail = CreateUpdateUserDto.builder()
-                .name("user")
-                .build();
-
-        userWithWrongEmailNoName = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("@user.com")
-                .build();
-
-        userWithWrongEmailNoDomainSecondLevel = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("user@.com")
-                .build();
-
-        userWithWrongEmailNoDomainFirstLevel = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("user@user.")
-                .build();
-
-        userWithWrongEmailNoAt = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("user.user.com")
-                .build();
-
-        userWithWrongEmailToShortDomainFirstLevel = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("user@user.c")
-                .build();
-
-        userWithWrongEmailToLongDomainFirstLevel = CreateUpdateUserDto.builder()
-                .name("user")
-                .email("user@user.commm")
                 .build();
 
         getUserDto = GetUserDto.builder()
@@ -115,105 +62,6 @@ class UserControllerTest {
         for (int i = 0; i < 20; i++) {
             listOfUsers.add(getUserDto.toBuilder().id(i + 2L).build());
         }
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithoutName() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithoutName);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithBlankName() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithBlankName);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithoutEmail() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithoutEmail);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailNoName() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoName);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailNoDomainSecondLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoDomainSecondLevel);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailNoDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoDomainFirstLevel);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailNoAt() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoAt);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailToShortDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailToShortDomainFirstLevel);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithCreateUserWithWrongEmailToLongDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailToLongDomainFirstLevel);
-
-        mockMvc.perform(post("/users")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(any(CreateUpdateUserDto.class));
     }
 
     @Test
@@ -232,106 +80,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(getUserDto.getEmail()));
 
         verify(userService, times(1)).create(correctUser);
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailNoName() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoName);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailNoDomainSecondLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoDomainSecondLevel);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailNoDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoDomainFirstLevel);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailNoAt() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailNoAt);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailToShortDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailToShortDomainFirstLevel);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldGetExceptionWithUpdateUserWithWrongEmailToLongDomainFirstLevel() throws Exception {
-        String jsonUser = objectMapper.writeValueAsString(userWithWrongEmailToLongDomainFirstLevel);
-
-        mockMvc.perform(patch("/users/1")
-                        .content(jsonUser)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldUpdateUserWithoutName() throws Exception {
-        when(userService.update(anyLong(), any(CreateUpdateUserDto.class)))
-                .thenReturn(getUserDto);
-
-        String jsonUser = objectMapper.writeValueAsString(userWithoutName);
-
-        mockMvc.perform(patch("/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(getUserDto.getId()))
-                .andExpect(jsonPath("$.name").value(getUserDto.getName()))
-                .andExpect(jsonPath("$.email").value(getUserDto.getEmail()));
-        verify(userService, times(1)).update(anyLong(), any(CreateUpdateUserDto.class));
-    }
-
-    @Test
-    void shouldUpdateUserWithoutEmail() throws Exception {
-        when(userService.update(anyLong(), any(CreateUpdateUserDto.class)))
-                .thenReturn(getUserDto);
-
-        String jsonUser = objectMapper.writeValueAsString(userWithoutEmail);
-
-        mockMvc.perform(patch("/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(getUserDto.getId()))
-                .andExpect(jsonPath("$.name").value(getUserDto.getName()))
-                .andExpect(jsonPath("$.email").value(getUserDto.getEmail()));
-        verify(userService, times(1)).update(anyLong(), any(CreateUpdateUserDto.class));
     }
 
     @Test
@@ -372,38 +120,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(getUserDto.getName()))
                 .andExpect(jsonPath("$.email").value(getUserDto.getEmail()));
         verify(userService, times(1)).getById(anyLong());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllWithFromLessThen0() throws Exception {
-        mockMvc.perform(get("/users?from=-1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).getById(anyLong());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllWithFromMoreThenMaxInt() throws Exception {
-        mockMvc.perform(get("/users?from=2147483648")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).getById(anyLong());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllWithFromSizeLessThen1() throws Exception {
-        mockMvc.perform(get("/users?size=0")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).getById(anyLong());
-    }
-
-    @Test
-    void shouldGetExceptionWithGetAllWithSizeMoreThen20() throws Exception {
-        mockMvc.perform(get("/users?size=21")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).getById(anyLong());
     }
 
     @Test

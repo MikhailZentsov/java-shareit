@@ -39,8 +39,6 @@ class ItemRequestControllerTest {
     private ItemRequestService requestService;
 
     private static CreateItemRequestDto correctRequest;
-    private static CreateItemRequestDto requestWithBlankDescription;
-    private static CreateItemRequestDto requestWithDescriptionSize1001;
     private static GetItemRequestDto getItemRequestDto;
     private static List<GetItemRequestDto> listOfRequests;
 
@@ -48,14 +46,6 @@ class ItemRequestControllerTest {
     static void beforeAll() {
         correctRequest = CreateItemRequestDto.builder()
                 .description("description")
-                .build();
-
-        requestWithBlankDescription = CreateItemRequestDto.builder()
-                .description(" ")
-                .build();
-
-        requestWithDescriptionSize1001 = CreateItemRequestDto.builder()
-                .description("A".repeat(1001))
                 .build();
 
         getItemRequestDto = GetItemRequestDto.builder()
@@ -77,36 +67,6 @@ class ItemRequestControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(correctRequest);
 
         mockMvc.perform(post("/requests")
-                        .content(jsonRequest)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).createRequest(anyLong(), any(CreateItemRequestDto.class));
-    }
-
-    @Test
-    void shouldExceptionWithCreateRequestWithRequestWithBlankDescription() throws Exception {
-        when(requestService.createRequest(anyLong(), any(CreateItemRequestDto.class)))
-                .thenReturn(getItemRequestDto);
-
-        String jsonRequest = objectMapper.writeValueAsString(requestWithBlankDescription);
-
-        mockMvc.perform(post("/requests")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .content(jsonRequest)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).createRequest(anyLong(), any(CreateItemRequestDto.class));
-    }
-
-    @Test
-    void shouldExceptionWithCreateRequestWithRequestWithDescriptionSize1001() throws Exception {
-        when(requestService.createRequest(anyLong(), any(CreateItemRequestDto.class)))
-                .thenReturn(getItemRequestDto);
-
-        String jsonRequest = objectMapper.writeValueAsString(requestWithDescriptionSize1001);
-
-        mockMvc.perform(post("/requests")
-                        .header(REQUEST_HEADER_USER_ID, "1")
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -157,65 +117,6 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.[0].id").value(2L))
                 .andExpect(jsonPath("$.[19].id").value(21L));
         verify(requestService, times(1)).getAllRequestsByUserId(anyLong());
-    }
-
-    @Test
-    void shouldExceptionWithGetAllRequestsWithRequestWithoutHeader() throws Exception {
-        when(requestService.getAllRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(listOfRequests);
-
-        mockMvc.perform(get("/requests/all")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).getAllRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldExceptionWithGetAllRequestsWithFromLessThen0() throws Exception {
-        when(requestService.getAllRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(listOfRequests);
-
-        mockMvc.perform(get("/requests/all?from=-1")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).getAllRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldExceptionWithGetAllRequestsWithFromMoreThenMaxInt() throws Exception {
-        when(requestService.getAllRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(listOfRequests);
-
-        mockMvc.perform(get("/requests/all?from=2147483648")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).getAllRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldExceptionWithGetAllRequestsWithSizeLessThen1() throws Exception {
-        when(requestService.getAllRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(listOfRequests);
-
-        mockMvc.perform(get("/requests/all?size=0")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).getAllRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    void shouldExceptionWithGetAllRequestsWithSizeMoreThen20() throws Exception {
-        when(requestService.getAllRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(listOfRequests);
-
-        mockMvc.perform(get("/requests/all?size=21")
-                        .header(REQUEST_HEADER_USER_ID, "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(requestService, never()).getAllRequests(anyLong(), anyInt(), anyInt());
     }
 
     @Test
