@@ -23,6 +23,7 @@ import ru.practicum.shareit.marker.OnUpdate;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 import static ru.practicum.shareit.util.Constants.REQUEST_HEADER_USER_ID;
@@ -70,7 +71,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<GetItemDto> search(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
-                                   @RequestParam String text,
+                                   @RequestParam @NotBlank String text,
                                    @RequestParam(defaultValue = "0") @Min(0) @Max(Integer.MAX_VALUE) int from,
                                    @RequestParam(defaultValue = "20") @Min(1) @Max(20) int size) {
         return itemService.search(userId, text, from, size);

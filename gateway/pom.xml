@@ -65,7 +65,6 @@
         <dependency>
             <groupId>com.mageddo.lombok</groupId>
             <artifactId>lombok-ext</artifactId>
-            <version>2.4.4</version>
         </dependency>
     </dependencies>
 

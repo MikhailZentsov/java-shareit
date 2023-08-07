@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotValidDateException;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.mapper.BookingMapper;
@@ -145,11 +144,6 @@ public class BookingServiceImpl implements BookingService {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден")
         );
-
-        if (createBookingDto.getEnd().isBefore(createBookingDto.getStart()) ||
-                createBookingDto.getEnd().isEqual(createBookingDto.getStart())) {
-            throw new NotValidDateException("Дата окончания не может быть раньше или равна дате начала");
-        }
 
         Item item = itemStorage.findById(createBookingDto.getItemId()).orElseThrow(
                 () -> new NotFoundException("Вещь не найдена")
