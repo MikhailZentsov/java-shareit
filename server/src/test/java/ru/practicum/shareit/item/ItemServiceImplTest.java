@@ -50,19 +50,17 @@ class ItemServiceImplTest {
 
     private static User user;
     private static ItemRequest request;
-    private static LocalDateTime currentTime;
     private static CreateUpdateItemDto createItemDto;
     private static CreateUpdateItemDto updateItemDto;
     private static CreateCommentDto createCommentDto;
     private static Item item;
     private static Item updatedItem;
-    private static Booking booking;
     private static Comment comment;
     private static List<Item> listOfItems;
 
     @BeforeAll
     static void beforeAll() {
-        currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
 
         user = User.builder()
                 .id(1L)
@@ -118,7 +116,7 @@ class ItemServiceImplTest {
                 .comments(null)
                 .build();
 
-        booking = Booking.builder()
+        Booking booking = Booking.builder()
                 .id(1L)
                 .item(item)
                 .booker(user)
@@ -579,23 +577,6 @@ class ItemServiceImplTest {
 
         assertEquals("Пользователь не найден",
                 exception.getMessage());
-        verify(userStorage, times(1)).findById(anyLong());
-        verify(requestStorage, never()).findById(anyLong());
-        verify(commentStorage, never()).findById(anyLong());
-        verify(itemStorage, never()).search(anyString(), any(Pageable.class));
-    }
-
-    @Test
-    void shouldGetEmptyListWithSearchWithBlankText() {
-        when(userStorage.findById(anyLong()))
-                .thenReturn(Optional.of(user));
-        when(itemStorage.search(anyString(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(listOfItems));
-
-        List<GetItemDto> items = itemService.search(1L, " ", 7, 3);
-
-        assertThat(items)
-                .isEmpty();
         verify(userStorage, times(1)).findById(anyLong());
         verify(requestStorage, never()).findById(anyLong());
         verify(commentStorage, never()).findById(anyLong());

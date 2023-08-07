@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotValidDateException;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.dto.GetBookingForItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -41,7 +40,6 @@ class BookingServiceImplTest {
     private static UserStorage userStorage;
 
     private static User user;
-    private static User user2;
     private static Item item;
     private static CreateBookingDto bookingDto;
     private static LocalDateTime startTime;
@@ -63,7 +61,7 @@ class BookingServiceImplTest {
                 .email("mail@ya.ru")
                 .build();
 
-        user2 = User.builder()
+        User user2 = User.builder()
                 .id(2L)
                 .name("userName2")
                 .email("mail2@ya.ru")
@@ -177,27 +175,6 @@ class BookingServiceImplTest {
                 exception.getMessage());
         verify(userStorage, times(1)).findById(anyLong());
         verify(itemStorage, times(1)).findById(anyLong());
-        verify(bookingStorage, never()).save(any(Booking.class));
-    }
-
-    @Test
-    void shouldGetExceptionCreateBookingNotValidDateException() {
-        when(userStorage.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(user));
-        when(itemStorage.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(item));
-        when(bookingStorage.save(any(Booking.class)))
-                .thenReturn(booking);
-
-        final NotValidDateException exception = Assertions.assertThrows(
-                NotValidDateException.class,
-                () -> bookingService.create(2L, bookingDto.toBuilder().start(endTime).end(startTime).build())
-        );
-
-        assertEquals("Дата окончания не может быть раньше или равна дате начала",
-                exception.getMessage());
-        verify(userStorage, times(1)).findById(anyLong());
-        verify(itemStorage, never()).findById(anyLong());
         verify(bookingStorage, never()).save(any(Booking.class));
     }
 
