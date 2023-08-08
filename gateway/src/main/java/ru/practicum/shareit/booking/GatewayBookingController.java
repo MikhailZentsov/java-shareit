@@ -13,15 +13,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
-import ru.practicum.shareit.exception.NotValidDateException;
 import ru.practicum.shareit.marker.ToLog;
+import ru.practicum.shareit.validator.StartBeforeEndDateValid;
 import ru.practicum.shareit.validator.ValuesAllowedConstraint;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-
-import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.util.Constants.REQUEST_HEADER_USER_ID;
 
@@ -73,13 +71,10 @@ public class GatewayBookingController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader(REQUEST_HEADER_USER_ID) long userId,
-                                @RequestBody @Valid CreateBookingDto createBookingDto) {
-        LocalDateTime start = createBookingDto.getStart();
-        LocalDateTime end = createBookingDto.getEnd();
-
-        if (!start.isBefore(end)) {
-            throw new NotValidDateException("Дата окончания не может быть раньше или равна дате начала");
-        }
+                                @RequestBody
+                                @Valid
+                                @StartBeforeEndDateValid(message = "Дата окончания не может быть раньше или равна дате начала")
+                                CreateBookingDto createBookingDto) {
 
         return client.create(userId, createBookingDto);
     }
